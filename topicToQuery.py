@@ -16,19 +16,19 @@ list_of_file = glob.glob(path)
 for file in list_of_file:
     lists_topics = []
     with open(file) as fp:
-        num_str = ""
+        num_val = 0
         for line in fp:
             # Get <num>
             result = re.match(r"<num>\s*Number:\s*(\d+)\n", line)
             if bool(result):
-                num_str = result.group(1)
+                num_val = int( result.group(1), 10)
 
             # Get <title>
             title_str = ""
             result = re.match(r"<title>\s*Topic:\s*(.*)\n", line)
             if bool(result):
                 title_str = result.group(1)
-                lists_topics += [{"num": num_str, "title": title_str}]
+                lists_topics += [{"num": num_val, "title": title_str}]
 
     print("{} ({} request converted)".format(file, len(lists_topics)))
 
