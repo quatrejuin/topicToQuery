@@ -2,9 +2,11 @@
 import glob
 import re
 from os.path import basename, dirname
+import sys
 
-# Input File path
-path = "/TREC_FILE_PATH/topics.*.txt"
+if len(sys.argv) > 1:
+    # Input File path
+    path = sys.argv[1]
 
 # Output file will be lcated in the same path as input file
 # but with the output_prefix and extension .xml
@@ -17,35 +19,36 @@ for file in list_of_file:
         num_str = ""
         for line in fp:
             # Get <num>
-            result = re.match(r"<num> Number:\s*(\d+)", line)
+            result = re.match(r"<num>\s*Number:\s*(\d+)\n", line)
             if bool(result):
                 num_str = result.group(1)
 
             # Get <title>
             title_str = ""
-            result = re.match(r"<title> Topic:\s*(.*)\n", line)
+            result = re.match(r"<title>\s*Topic:\s*(.*)\n", line)
             if bool(result):
                 title_str = result.group(1)
                 lists_topics += [{"num": num_str, "title": title_str}]
+
+    print("{} ({} request converted)".format(file, len(lists_topics)))
+
     # Write the Indri query format file
     with open(dirname(path) + "/" + output_prefix + basename(file)[:-4] + ".xml", "w") as fw:
         param = ("<parameters>\n")
         for topic in lists_topics:
             query = (
                     "\t<query>\n"
-                     "\t\t<type> indri </type>\n"
+                     "\t\t<type>indri</type>\n"
                      "\t\t<number>" + topic["num"] + "</number>\n"
                      "\t\t<text>\n"
-                     "\t\t\t# combine( " + topic["title"] + " )\n"
+                     "\t\t\t#combine( " + topic["title"] + " )\n"
                      "\t\t</text>\n"
                     "\t</query>\n"
                      )
             param += query
-        param += ("\t<memory> 1G </memory>\n"
-                     "\t<index>./test_output </index>\n"
-                     "\t<trecFormat> true </trecFormat>\n"
-                     "\t<count> 1000 </count>\n"
+        param += ("\t<memory>1G</memory>\n"
+                     "\t<index>./test_output</index>\n"
+                     "\t<trecFormat>true</trecFormat>\n"
+                     "\t<count>1000</count>\n"
                      "</parameters>")
         fw.writelines(param)
-
-print()
