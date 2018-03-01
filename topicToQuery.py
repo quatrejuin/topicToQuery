@@ -19,7 +19,7 @@ for file in list_of_file:
         num_val = 0
         for line in fp:
             # Get <num>
-            result = re.match(r"<num>\s*Number:\s*(\d+)\n", line)
+            result = re.match(r"<num>\s*Number:\s*(\d+)\s*\n", line)
             if bool(result):
                 num_val = int( result.group(1), 10)
 
@@ -38,14 +38,14 @@ for file in list_of_file:
         for topic in lists_topics:
             query = (
                     "\t<query>\n"
-                     "\t\t<type>indri</type>\n"
-                     "\t\t<number>" + topic["num"] + "</number>\n"
-                     "\t\t<text>\n"
-                     "\t\t\t#combine( " + topic["title"] + " )\n"
-                     "\t\t</text>\n"
+                    "\t\t<type>indri</type>\n"
+                    "\t\t<number>{0}</number>\n"
+                    "\t\t<text>\n"
+                    "\t\t\t#combine( {1} )\n"
+                    "\t\t</text>\n"
                     "\t</query>\n"
                      )
-            param += query
+            param += query.format(topic["num"], topic["title"])
         param += ("\t<memory>1G</memory>\n"
                      "\t<index>./test_output</index>\n"
                      "\t<trecFormat>true</trecFormat>\n"
