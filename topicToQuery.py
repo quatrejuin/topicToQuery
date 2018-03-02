@@ -28,6 +28,14 @@ for file in list_of_file:
             result = re.match(r"<title>\s*Topic:\s*(.*)\n", line)
             if bool(result):
                 title_str = result.group(1)
+                # Enlever les points(.)
+                # Remplacer les gillemets(") et traits(-) et tous les autres avec une espace.
+                # Donc les mots comme  U.S.-U.S.S.R. deviendront US USSR
+                # To avoid cause error in Indri 5.12
+                title_str = title_str.replace(".","")
+                # re.sub(r"[^A-Za-z]+", ' ', title_str) #Just keep english letters.
+                # Replace all the non-alphas with space, but keep digits
+                title_str = ''.join([(x if x.isalpha() or x.isdigit() else ' ') for x in title_str])
                 lists_topics += [{"num": num_val, "title": title_str}]
 
     print("{} ({} request converted)".format(file, len(lists_topics)))
